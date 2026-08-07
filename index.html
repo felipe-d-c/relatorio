@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Léah Estética — Relatórios de Unidade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBF6F3;
+    --surface:#FFFFFF;
+    --ink:#2B2320;
+    --ink-muted:#7A6F6A;
+    --accent:#9C3F56;
+    --accent-soft:#F3E3E7;
+    --gold:#B08D57;
+    --sage:#6E8E72;
+    --sage-soft:#E7EEE7;
+    --border:#E8DDD6;
+    --danger:#B23B3B;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Work Sans',sans-serif;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:640px;margin:0 auto;padding:32px 20px 80px;}
+
+  header.top{text-align:center;margin-bottom:28px;}
+  header.top .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+  header.top h1{font-family:'Fraunces',serif;font-weight:500;font-size:30px;margin:0;line-height:1.15;}
+  header.top p{color:var(--ink-muted);font-size:14px;margin:8px 0 0;}
+
+  /* progress */
+  .progress{display:flex;gap:6px;margin:28px 0 8px;}
+  .progress .seg{flex:1;height:3px;background:var(--border);border-radius:3px;overflow:hidden;}
+  .progress .seg.done, .progress .seg.active{background:var(--accent);}
+  .steplabels{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:24px;}
+  .steplabels span.active{color:var(--accent);}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;box-shadow:0 1px 2px rgba(43,35,32,0.03);}
+
+  .field{margin-bottom:20px;}
+  .field:last-child{margin-bottom:0;}
+  label{display:block;font-size:13px;font-weight:600;margin-bottom:7px;color:var(--ink);}
+  label .hint{display:block;font-weight:400;font-size:12px;color:var(--ink-muted);margin-top:2px;}
+
+  select, input[type=text], input[type=date], textarea{
+    width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:9px;
+    font-family:'Work Sans',sans-serif;font-size:15px;color:var(--ink);background:#fff;
+  }
+  select:focus, input:focus, textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent);}
+  textarea{resize:vertical;min-height:64px;}
+
+  /* numeric / money receipt style — signature element */
+  .numrow{display:flex;align-items:center;border:1px solid var(--border);border-radius:9px;overflow:hidden;background:#fff;}
+  .numrow .prefix{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-muted);padding:0 10px;background:var(--sage-soft);align-self:stretch;display:flex;align-items:center;border-right:1px solid var(--border);}
+  .numrow input{border:none;flex:1;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:16px;padding:11px 13px;background:transparent;}
+  .numrow input:focus{outline:none;}
+  .numrow:focus-within{outline:2px solid var(--accent);outline-offset:1px;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:480px){.grid2{grid-template-columns:1fr;}}
+
+  fieldset{border:none;padding:0;margin:0 0 20px;}
+  fieldset legend{font-family:'Fraunces',serif;font-size:17px;font-weight:500;color:var(--accent);margin-bottom:12px;padding:0;}
+
+  .radiogroup{display:flex;gap:10px;flex-wrap:wrap;}
+  .radiogroup label{display:flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:8px;padding:9px 14px;font-weight:500;font-size:14px;cursor:pointer;margin:0;flex:1;justify-content:center;}
+  .radiogroup input{margin:0;accent-color:var(--accent);}
+  .radiogroup label:has(input:checked){border-color:var(--accent);background:var(--accent-soft);}
+
+  .checkgroup label{display:flex;align-items:center;gap:9px;font-weight:400;font-size:14px;padding:6px 0;margin:0;cursor:pointer;}
+  .checkgroup input{accent-color:var(--accent);width:16px;height:16px;}
+
+  .btnrow{display:flex;gap:12px;margin-top:28px;}
+  button{font-family:'Work Sans',sans-serif;font-weight:600;font-size:15px;border-radius:9px;padding:13px 20px;border:none;cursor:pointer;transition:opacity .15s;}
+  button:active{opacity:.8;}
+  .btn-primary{background:var(--accent);color:#fff;flex:1;}
+  .btn-primary:disabled{background:#d8c3ca;cursor:not-allowed;}
+  .btn-ghost{background:transparent;color:var(--ink-muted);border:1px solid var(--border);}
+
+  .kicker-select{display:flex;flex-direction:column;gap:14px;}
+
+  .review-item{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:14px;gap:16px;}
+  .review-item:last-child{border-bottom:none;}
+  .review-item .k{color:var(--ink-muted);}
+  .review-item .v{font-family:'IBM Plex Mono',monospace;text-align:right;font-weight:500;}
+
+  .success{text-align:center;padding:40px 20px;}
+  .success .check{width:56px;height:56px;border-radius:50%;background:var(--sage-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+  .success h2{font-family:'Fraunces',serif;font-weight:500;font-size:24px;margin:0 0 8px;}
+  .success p{color:var(--ink-muted);font-size:14px;margin:0 0 24px;}
+
+  .errbox{background:#FBEAEA;border:1px solid #E8C4C4;color:var(--danger);border-radius:9px;padding:12px 14px;font-size:13px;margin-top:16px;display:none;}
+  .errbox.show{display:block;}
+
+  .hidden{display:none !important;}
+  .spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:inline-block;vertical-align:-3px;margin-right:8px;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">Léah Estética</div>
+    <h1>Relatório de Unidade</h1>
+    <p>Joaçaba · Videira · Treze Tílias · Campos Novos</p>
+  </header>
+
+  <div class="progress">
+    <div class="seg active" id="seg1"></div>
+    <div class="seg" id="seg2"></div>
+    <div class="seg" id="seg3"></div>
+  </div>
+  <div class="steplabels">
+    <span id="lab1" class="active">Seleção</span>
+    <span id="lab2">Preenchimento</span>
+    <span id="lab3">Confirmação</span>
+  </div>
+
+  <div class="card">
+
+    <!-- STEP 1 -->
+    <div id="step1">
+      <div class="kicker-select">
+        <div class="field">
+          <label for="unidade">Unidade</label>
+          <select id="unidade">
+            <option value="">Selecione a unidade…</option>
+            <option>Joaçaba</option>
+            <option>Videira</option>
+            <option>Treze Tílias</option>
+            <option>Campos Novos</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="periodicidade">Tipo de relatório</label>
+          <select id="periodicidade">
+            <option value="">Selecione o período…</option>
+            <option value="diario">Diário</option>
+            <option value="semanal">Semanal</option>
+            <option value="mensal">Mensal</option>
+          </select>
+        </div>
+        <div class="field" id="respField">
+          <label for="responsavel">Seu nome<span class="hint">Gerente responsável pelo preenchimento</span></label>
+          <input type="text" id="responsavel" placeholder="Nome completo">
+        </div>
+      </div>
+      <div class="btnrow">
+        <button class="btn-primary" id="toStep2">Continuar</button>
+      </div>
+      <div class="errbox" id="err1"></div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div id="step2" class="hidden">
+      <form id="dynForm"></form>
+      <div class="btnrow">
+        <button class="btn-ghost" id="backTo1">Voltar</button>
+        <button class="btn-primary" id="toStep3">Revisar e enviar</button>
+      </div>
+      <div class="errbox" id="err2"></div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div id="step3" class="hidden">
+      <div id="reviewBox"></div>
+      <div class="btnrow">
+        <button class="btn-ghost" id="backTo2">Editar</button>
+        <button class="btn-primary" id="submitBtn">Enviar relatório</button>
+      </div>
+      <div class="errbox" id="err3"></div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div id="stepDone" class="hidden success">
+      <div class="check">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#6E8E72" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2>Relatório enviado</h2>
+      <p id="doneText">Os dados foram registrados com sucesso.</p>
+      <button class="btn-primary" id="newReportBtn" style="max-width:220px;margin:0 auto;">Enviar outro relatório</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ====================== CONFIG ====================== */
+// Cole aqui a URL do seu Web App do Google Apps Script (Deploy → Web app)
+const ENDPOINT_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
+
+/* ====================== FORM SCHEMAS ====================== */
+const SCHEMAS = {
+  diario: {
+    label: "Relatório Diário",
+    sheetName: "Diario",
+    sections: [
+      { legend: "Resultado do dia", fields: [
+        { id:"meta_dia", label:"Meta do dia", type:"money" },
+        { id:"faturamento", label:"Faturamento realizado", type:"money" },
+        { id:"clientes_atendidos", label:"Clientes atendidos", type:"number" },
+        { id:"vendas_realizadas", label:"Vendas realizadas", type:"number" },
+        { id:"ticket_medio", label:"Ticket médio", type:"money" },
+      ]},
+      { legend: "Agenda", fields: [
+        { id:"avaliacoes_agendadas", label:"Avaliações agendadas", type:"number" },
+        { id:"comparecimentos", label:"Comparecimentos", type:"number" },
+        { id:"faltas", label:"Faltas", type:"number" },
+        { id:"reagendamentos", label:"Reagendamentos", type:"number" },
+      ]},
+      { legend: "Comercial", fields: [
+        { id:"leads_recebidos", label:"Leads recebidos", type:"number" },
+        { id:"leads_atendidos", label:"Leads atendidos", type:"number" },
+        { id:"leads_pendentes", label:"Leads pendentes", type:"number" },
+        { id:"followups", label:"Follow-ups realizados", type:"number" },
+      ]},
+      { legend: "Equipe", fields: [
+        { id:"processos_ok", label:"Todos cumpriram os processos hoje?", type:"radio", options:["Sim","Não"] },
+        { id:"processos_detalhe", label:"Se não, quem e por quê?", type:"textarea" },
+      ]},
+      { legend: "Observações", fields: [
+        { id:"maior_dificuldade", label:"Maior dificuldade do dia", type:"textarea" },
+        { id:"acao_resolucao", label:"O que foi feito para resolver?", type:"textarea" },
+        { id:"apoio_comercial", label:"Precisa de apoio da Gerente Comercial?", type:"radio", options:["Não","Sim"] },
+        { id:"apoio_qual", label:"Qual apoio?", type:"textarea" },
+      ]},
+    ]
+  },
+  semanal: {
+    label: "Relatório Semanal",
+    sheetName: "Semanal",
+    sections: [
+      { legend: "Período", fields: [
+        { id:"semana_de", label:"Semana — de", type:"date" },
+        { id:"semana_ate", label:"Semana — até", type:"date" },
+      ]},
+      { legend: "Indicadores financeiros", fields: [
+        { id:"meta_semana", label:"Meta da semana", type:"money" },
+        { id:"realizado_semana", label:"Realizado", type:"money" },
+      ]},
+      { legend: "Indicadores operacionais", fields: [
+        { id:"leads", label:"Leads", type:"number" },
+        { id:"avaliacoes", label:"Avaliações", type:"number" },
+        { id:"comparecimentos_s", label:"Comparecimentos", type:"number" },
+        { id:"vendas_s", label:"Vendas", type:"number" },
+        { id:"conversao", label:"Conversão avaliação → venda (%)", type:"number" },
+        { id:"ticket_medio_s", label:"Ticket médio", type:"money" },
+        { id:"indicacoes", label:"Indicações", type:"number" },
+        { id:"upsell_s", label:"Upsell", type:"number" },
+        { id:"vendas_maca", label:"Vendas na maca", type:"number" },
+      ]},
+      { legend: "Análise da semana", fields: [
+        { id:"funcionou_bem", label:"O que funcionou muito bem nesta semana?", type:"textarea" },
+        { id:"maior_desafio_s", label:"Qual foi o maior desafio?", type:"textarea" },
+        { id:"acoes_realizadas", label:"Ações realizadas", type:"checkbox", options:["Treinamento","Feedback","Auditoria CRM","Recuperação de clientes","Reativação","Acompanhamento de consultora","Outro"] },
+      ]},
+      { legend: "Equipe", fields: [
+        { id:"reconhecimento_nome", label:"Colaborador que merece reconhecimento — nome", type:"text" },
+        { id:"reconhecimento_motivo", label:"Motivo", type:"textarea" },
+        { id:"desenvolvimento_nome", label:"Colaborador que precisa de desenvolvimento — nome", type:"text" },
+        { id:"desenvolvimento_dificuldade", label:"Principal dificuldade", type:"textarea" },
+        { id:"desenvolvimento_plano", label:"Plano de ação", type:"textarea" },
+      ]},
+      { legend: "Próxima semana", fields: [
+        { id:"prioridades_prox", label:"Prioridades da próxima semana", type:"textarea" },
+      ]},
+    ]
+  },
+  mensal: {
+    label: "Relatório Mensal",
+    sheetName: "Mensal",
+    sections: [
+      { legend: "Mês de referência", fields: [
+        { id:"mes_ref", label:"Mês / ano", type:"text", placeholder:"Ex: Agosto/2026" },
+      ]},
+      { legend: "Resultado financeiro", fields: [
+        { id:"meta_mes", label:"Meta", type:"money" },
+        { id:"realizado_mes", label:"Realizado", type:"money" },
+        { id:"evolucao", label:"Comparado ao mês anterior", type:"radio", options:["Cresceu","Manteve","Caiu"] },
+        { id:"evolucao_motivo", label:"Motivo", type:"textarea" },
+      ]},
+      { legend: "KPIs do mês", fields: [
+        { id:"leads_m", label:"Leads", type:"number" },
+        { id:"avaliacoes_m", label:"Avaliações", type:"number" },
+        { id:"comparecimento_m", label:"Comparecimento", type:"number" },
+        { id:"conversao_m", label:"Conversão (%)", type:"number" },
+        { id:"ticket_medio_m", label:"Ticket médio", type:"money" },
+        { id:"upsell_m", label:"Upsell", type:"number" },
+        { id:"crosssell_m", label:"Cross-sell", type:"number" },
+        { id:"indicacoes_m", label:"Indicações", type:"number" },
+        { id:"vendas_maca_m", label:"Vendas na maca", type:"number" },
+        { id:"reativacoes_m", label:"Reativações", type:"number" },
+      ]},
+      { legend: "Desenvolvimento da equipe", fields: [
+        { id:"treinamentos", label:"Quais treinamentos foram realizados?", type:"textarea" },
+        { id:"mais_evoluiu", label:"Quem mais evoluiu?", type:"text" },
+        { id:"mais_acompanhamento", label:"Quem precisa de maior acompanhamento?", type:"text" },
+      ]},
+      { legend: "Processos", fields: [
+        { id:"crm_atualizado", label:"CRM atualizado?", type:"radio", options:["Sim","Não"] },
+        { id:"scripts_uso", label:"Scripts sendo utilizados?", type:"radio", options:["Sim","Parcialmente","Não"] },
+        { id:"followup_realizado", label:"Follow-up sendo realizado?", type:"radio", options:["Sim","Não"] },
+        { id:"relatorios_entregues", label:"Relatórios entregues?", type:"radio", options:["Sim","Não"] },
+      ]},
+      { legend: "Plano de ação do próximo mês", fields: [
+        { id:"objetivo1", label:"Objetivo 1", type:"textarea" },
+        { id:"objetivo2", label:"Objetivo 2", type:"textarea" },
+        { id:"objetivo3", label:"Objetivo 3", type:"textarea" },
+        { id:"apoio_gerencia", label:"O que precisa da Gerente Comercial?", type:"textarea" },
+      ]},
+    ]
+  }
+};
+
+/* ====================== STATE ====================== */
+let currentSchema = null;
+let currentPeriodicidade = null;
+
+/* ====================== HELPERS ====================== */
+function el(tag, attrs={}, children=[]){
+  const e = document.createElement(tag);
+  for(const k in attrs){
+    if(k === "text") e.textContent = attrs[k];
+    else if(k === "html") e.innerHTML = attrs[k];
+    else e.setAttribute(k, attrs[k]);
+  }
+  children.forEach(c => e.appendChild(c));
+  return e;
+}
+
+function buildField(f){
+  const wrap = el("div", {class:"field"});
+  if(f.type !== "checkbox" && f.type !== "radio"){
+    const lbl = el("label", {for:f.id, text:f.label});
+    wrap.appendChild(lbl);
+  }
+
+  if(f.type === "money"){
+    const row = el("div", {class:"numrow"});
+    row.appendChild(el("span", {class:"prefix", text:"R$"}));
+    const input = el("input", {type:"text", inputmode:"decimal", id:f.id, placeholder:"0,00"});
+    row.appendChild(input);
+    wrap.appendChild(row);
+  } else if(f.type === "number"){
+    const row = el("div", {class:"numrow"});
+    row.appendChild(el("span", {class:"prefix", text:"#"}));
+    const input = el("input", {type:"text", inputmode:"numeric", id:f.id, placeholder:"0"});
+    row.appendChild(input);
+    wrap.appendChild(row);
+  } else if(f.type === "text"){
+    wrap.appendChild(el("input", {type:"text", id:f.id, placeholder:f.placeholder||""}));
+  } else if(f.type === "date"){
+    wrap.appendChild(el("input", {type:"date", id:f.id}));
+  } else if(f.type === "textarea"){
+    wrap.appendChild(el("textarea", {id:f.id, rows:"3"}));
+  } else if(f.type === "radio"){
+    const legend = el("label", {text:f.label});
+    wrap.appendChild(legend);
+    const group = el("div", {class:"radiogroup", id:f.id});
+    f.options.forEach((opt,i) => {
+      const lab = el("label", {});
+      const inp = el("input", {type:"radio", name:f.id, value:opt});
+      if(i===0) inp.dataset.first = "1";
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(opt));
+      group.appendChild(lab);
+    });
+    wrap.appendChild(group);
+  } else if(f.type === "checkbox"){
+    const legend = el("label", {text:f.label});
+    wrap.appendChild(legend);
+    const group = el("div", {class:"checkgroup", id:f.id});
+    f.options.forEach(opt => {
+      const lab = el("label", {});
+      const inp = el("input", {type:"checkbox", value:opt, name:f.id});
+      lab.appendChild(inp);
+      lab.appendChild(document.createTextNode(opt));
+      group.appendChild(lab);
+    });
+    wrap.appendChild(group);
+  }
+  return wrap;
+}
+
+function renderForm(periodicidade){
+  const schema = SCHEMAS[periodicidade];
+  currentSchema = schema;
+  const form = document.getElementById("dynForm");
+  form.innerHTML = "";
+  schema.sections.forEach(sec => {
+    const fs = el("fieldset");
+    fs.appendChild(el("legend", {text:sec.legend}));
+    sec.fields.forEach(f => fs.appendChild(buildField(f)));
+    form.appendChild(fs);
+  });
+}
+
+function collectFormData(){
+  const data = {};
+  currentSchema.sections.forEach(sec => {
+    sec.fields.forEach(f => {
+      if(f.type === "radio"){
+        const checked = document.querySelector(`input[name="${f.id}"]:checked`);
+        data[f.id] = checked ? checked.value : "";
+      } else if(f.type === "checkbox"){
+        const checked = [...document.querySelectorAll(`input[name="${f.id}"]:checked`)].map(i=>i.value);
+        data[f.id] = checked.join(", ");
+      } else {
+        const el2 = document.getElementById(f.id);
+        data[f.id] = el2 ? el2.value.trim() : "";
+      }
+    });
+  });
+  return data;
+}
+
+function fieldLabelMap(){
+  const map = {};
+  currentSchema.sections.forEach(sec => sec.fields.forEach(f => map[f.id] = f.label));
+  return map;
+}
+
+/* ====================== STEP NAV ====================== */
+function goTo(stepNum){
+  ["step1","step2","step3","stepDone"].forEach(id => document.getElementById(id).classList.add("hidden"));
+  document.getElementById("step"+stepNum).classList.remove("hidden");
+  [1,2,3].forEach(n => {
+    document.getElementById("seg"+n).classList.toggle("active", n===stepNum);
+    document.getElementById("seg"+n).classList.toggle("done", n<stepNum);
+    document.getElementById("lab"+n).classList.toggle("active", n===stepNum);
+  });
+}
+
+document.getElementById("toStep2").addEventListener("click", () => {
+  const unidade = document.getElementById("unidade").value;
+  const periodicidade = document.getElementById("periodicidade").value;
+  const responsavel = document.getElementById("responsavel").value.trim();
+  const err = document.getElementById("err1");
+  if(!unidade || !periodicidade || !responsavel){
+    err.textContent = "Preencha unidade, tipo de relatório e seu nome antes de continuar.";
+    err.classList.add("show");
+    return;
+  }
+  err.classList.remove("show");
+  currentPeriodicidade = periodicidade;
+  renderForm(periodicidade);
+  goTo(2);
+});
+
+document.getElementById("backTo1").addEventListener("click", () => goTo(1));
+
+document.getElementById("toStep3").addEventListener("click", () => {
+  const data = collectFormData();
+  const labels = fieldLabelMap();
+  const box = document.getElementById("reviewBox");
+  box.innerHTML = "";
+  box.appendChild(el("div", {class:"review-item"}, [
+    el("span",{class:"k",text:"Unidade"}), el("span",{class:"v",text:document.getElementById("unidade").value})
+  ]));
+  box.appendChild(el("div", {class:"review-item"}, [
+    el("span",{class:"k",text:"Relatório"}), el("span",{class:"v",text:currentSchema.label})
+  ]));
+  box.appendChild(el("div", {class:"review-item"}, [
+    el("span",{class:"k",text:"Responsável"}), el("span",{class:"v",text:document.getElementById("responsavel").value})
+  ]));
+  for(const key in data){
+    if(!data[key]) continue;
+    box.appendChild(el("div", {class:"review-item"}, [
+      el("span",{class:"k",text:labels[key]}),
+      el("span",{class:"v",text:data[key]})
+    ]));
+  }
+  goTo(3);
+});
+
+document.getElementById("backTo2").addEventListener("click", () => goTo(2));
+
+document.getElementById("submitBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("submitBtn");
+  const err = document.getElementById("err3");
+  err.classList.remove("show");
+
+  const payload = {
+    sheet: currentSchema.sheetName,
+    unidade: document.getElementById("unidade").value,
+    responsavel: document.getElementById("responsavel").value,
+    timestamp: new Date().toISOString(),
+    ...collectFormData()
+  };
+
+  if(ENDPOINT_URL.includes("COLE_AQUI")){
+    err.textContent = "O endereço de envio (ENDPOINT_URL) ainda não foi configurado no código.";
+    err.classList.add("show");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Enviando…';
+
+  try{
+    await fetch(ENDPOINT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {"Content-Type":"text/plain"},
+      body: JSON.stringify(payload)
+    });
+    document.getElementById("doneText").textContent =
+      `Relatório ${currentSchema.label.toLowerCase()} da unidade ${payload.unidade} registrado com sucesso.`;
+    goTo("Done");
+  } catch(e){
+    err.textContent = "Não foi possível enviar. Verifique sua conexão e tente novamente.";
+    err.classList.add("show");
+    btn.disabled = false;
+    btn.textContent = "Enviar relatório";
+  }
+});
+
+document.getElementById("newReportBtn").addEventListener("click", () => {
+  document.getElementById("unidade").value = "";
+  document.getElementById("periodicidade").value = "";
+  document.getElementById("responsavel").value = "";
+  document.getElementById("submitBtn").disabled = false;
+  document.getElementById("submitBtn").textContent = "Enviar relatório";
+  goTo(1);
+});
+</script>
+</body>
+</html>
