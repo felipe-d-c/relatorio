@@ -1,40 +1,170 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Dashboard Léah Estética</title>
-  <style>
-    body { background: #121212; color: #fff; font-family: 'Work Sans', sans-serif; padding: 40px; }
-    .card { background: #1E1E1E; border-radius: 14px; padding: 24px; border: 1px solid #333; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #333; }
-    th { color: #ED2A78; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Léah Estética</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#121212;
+    --surface:#1E1E1E;
+    --ink:#F3F4F6;
+    --ink-muted:#9CA3AF;
+    --accent:#ED2A78;
+    --accent-soft:#3D1425;
+    --sage:#2EA060;
+    --sage-soft:#1A382B;
+    --border:#333333;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Work Sans',sans-serif;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 80px;}
+
+  header.top{text-align:center;margin-bottom:28px;}
+  header.top .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+  header.top h1{font-family:'Fraunces',serif;font-weight:500;font-size:30px;margin:0;color:#FFFFFF;}
+
+  /* tabs / filters */
+  .tabs{display:flex;gap:8px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px;}
+  .tab{background:var(--surface);border:1px solid var(--border);color:var(--ink-muted);padding:10px 18px;border-radius:9px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;transition:all .15s;}
+  .tab.active{background:var(--accent-soft);border-color:var(--accent);color:#fff;}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:0 4px 6px rgba(0,0,0,0.3);margin-bottom:24px;}
+  
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin-bottom:24px;}
+  .stat-card{background:#2A2A2A;border:1px solid var(--border);border-radius:10px;padding:16px;}
+  .stat-card .label{font-size:12px;color:var(--ink-muted);text-transform:uppercase;font-family:'IBM Plex Mono',monospace;}
+  .stat-card .value{font-size:24px;font-weight:600;color:#fff;margin-top:6px;font-family:'Fraunces',serif;}
+
+  table{width:100%;border-collapse:collapse;margin-top:10px;}
+  th, td{text-align:left;padding:12px;border-bottom:1px solid var(--border);font-size:14px;}
+  th{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;}
+  td{color:var(--ink);}
+
+  .loading{text-align:center;padding:40px;color:var(--ink-muted);font-family:'IBM Plex Mono',monospace;}
+  .back-link{display:inline-block;margin-bottom:20px;color:var(--ink-muted);text-decoration:none;font-size:13px;}
+  .back-link:hover{color:#fff;}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>Relatórios Recebidos</h1>
-    <table id="reportTable">
-      <thead>
-        <tr><th>Data</th><th>Unidade</th><th>Responsável</th><th>Tipo</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+<div class="wrap">
+  <a href="index.html" class="back-link">← Voltar para o Formulário</a>
+
+  <header class="top">
+    <div class="eyebrow">Léah Estética</div>
+    <h1>Dashboard Comercial</h1>
+  </header>
+
+  <!-- Filtros de Unidade -->
+  <div class="tabs" id="unitTabs">
+    <button class="tab active" data-unit="Todas">Todas</button>
+    <button class="tab" data-unit="Joaçaba">Joaçaba</button>
+    <button class="tab" data-unit="Videira">Videira</button>
+    <button class="tab" data-unit="Treze Tílias">Treze Tílias</button>
+    <button class="tab" data-unit="Campos Novos">Campos Novos</button>
   </div>
 
-  <script>
-    // Substitua pela URL do seu Web App (a mesma que você já usa, mas que vamos configurar para leitura)
-    const API_URL = "SUA_URL_DO_APPS_SCRIPT_AQUI/exec";
+  <!-- Resumo Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="label">Total de Relatórios</div>
+      <div class="value" id="totalCount">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Unidade em Destaque</div>
+      <div class="value" id="topUnit" style="font-size:20px;">-</div>
+    </div>
+  </div>
 
-    async function loadReports() {
-      const response = await fetch(API_URL);
-      const data = await response.json();
-      const tbody = document.querySelector("#reportTable tbody");
-      data.forEach(row => {
-        tbody.innerHTML += `<tr><td>${row.timestamp}</td><td>${row.unidade}</td><td>${row.responsavel}</td><td>${row.sheet}</td></tr>`;
-      });
-    }
-    loadReports();
-  </script>
+  <!-- Tabela de Dados -->
+  <div class="card">
+    <h3 style="margin-top:0;font-family:'Fraunces',serif;font-weight:500;">Histórico de Envios</h3>
+    <div id="contentArea">
+      <div class="loading">Carregando dados da planilha...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Cole aqui a mesma URL do Web App do Apps Script que você usou no index.html
+const API_URL = "https://script.google.com/macros/s/AKfycbzbQ3-AcoB8BtyxN1VIFmspM9vClok0fKOEEVnfEbe9RmtgVYC_MUQdDa3zBiRct7NISw/exec";
+
+let allData = [];
+let currentFilter = "Todas";
+
+async function fetchReports() {
+  try {
+    const res = await fetch(API_URL);
+    allData = await res.json();
+    render();
+  } catch (err) {
+    document.getElementById("contentArea").innerHTML = '<div class="loading" style="color:var(--danger);">Erro ao carregar os dados. Verifique a URL do Apps Script.</div>';
+  }
+}
+
+function render() {
+  // Filtrar dados
+  const filtered = currentFilter === "Todas" 
+    ? allData 
+    : allData.filter(item => item.unidade && item.unidade.trim().toLowerCase() === currentFilter.toLowerCase());
+
+  // Atualizar cards de resumo
+  document.getElementById("totalCount").textContent = filtered.length;
+  
+  if(allData.length > 0) {
+    const counts = {};
+    allData.forEach(i => { if(i.unidade) counts[i.unidade] = (counts[i.unidade] || 0) + 1; });
+    const top = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b, "-");
+    document.getElementById("topUnit").textContent = top;
+  }
+
+  // Renderizar Tabela
+  const area = document.getElementById("contentArea");
+  if(filtered.length === 0) {
+    area.innerHTML = '<div class="loading">Nenhum relatório encontrado para este filtro.</div>';
+    return;
+  }
+
+  let html = `<table>
+    <thead>
+      <tr>
+        <th>Data / Hora</th>
+        <th>Unidade</th>
+        <th>Responsável</th>
+        <th>Tipo</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  filtered.forEach(row => {
+    const dataFmt = row.timestamp ? new Date(row.timestamp).toLocaleDateString('pt-BR') : '-';
+    html += `<tr>
+      <td>${dataFmt}</td>
+      <td><strong>${row.unidade || '-'}</strong></td>
+      <td>${row.responsavel || '-'}</td>
+      <td>${row.sheet || '-'}</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+  area.innerHTML = html;
+}
+
+// Configurar cliques nas abas
+document.querySelectorAll(".tab").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+    e.target.classList.add("active");
+    currentFilter = e.target.dataset.unit;
+    render();
+  });
+});
+
+fetchReports();
+</script>
 </body>
 </html>
