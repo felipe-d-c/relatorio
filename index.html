@@ -9,17 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#FBF6F3;
-    --surface:#FFFFFF;
-    --ink:#2B2320;
-    --ink-muted:#7A6F6A;
-    --accent:#9C3F56;
-    --accent-soft:#F3E3E7;
+    --bg:#121212;
+    --surface:#1E1E1E;
+    --ink:#F3F4F6;
+    --ink-muted:#9CA3AF;
+    --accent:#ED2A78;
+    --accent-soft:#3D1425;
     --gold:#B08D57;
-    --sage:#6E8E72;
-    --sage-soft:#E7EEE7;
-    --border:#E8DDD6;
-    --danger:#B23B3B;
+    --sage:#2EA060;
+    --sage-soft:#1A382B;
+    --border:#333333;
+    --danger:#F87171;
     --radius:14px;
   }
   *{box-sizing:border-box;}
@@ -28,7 +28,7 @@
 
   header.top{text-align:center;margin-bottom:28px;}
   header.top .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
-  header.top h1{font-family:'Fraunces',serif;font-weight:500;font-size:30px;margin:0;line-height:1.15;}
+  header.top h1{font-family:'Fraunces',serif;font-weight:500;font-size:30px;margin:0;line-height:1.15;color:#FFFFFF;}
   header.top p{color:var(--ink-muted);font-size:14px;margin:8px 0 0;}
 
   /* progress */
@@ -38,7 +38,7 @@
   .steplabels{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:24px;}
   .steplabels span.active{color:var(--accent);}
 
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;box-shadow:0 1px 2px rgba(43,35,32,0.03);}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;box-shadow:0 4px 6px rgba(0,0,0,0.3);}
 
   .field{margin-bottom:20px;}
   .field:last-child{margin-bottom:0;}
@@ -47,15 +47,15 @@
 
   select, input[type=text], input[type=date], textarea{
     width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:9px;
-    font-family:'Work Sans',sans-serif;font-size:15px;color:var(--ink);background:#fff;
+    font-family:'Work Sans',sans-serif;font-size:15px;color:var(--ink);background:#2A2A2A;
   }
   select:focus, input:focus, textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent);}
   textarea{resize:vertical;min-height:64px;}
 
   /* numeric / money receipt style — signature element */
-  .numrow{display:flex;align-items:center;border:1px solid var(--border);border-radius:9px;overflow:hidden;background:#fff;}
+  .numrow{display:flex;align-items:center;border:1px solid var(--border);border-radius:9px;overflow:hidden;background:#2A2A2A;}
   .numrow .prefix{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-muted);padding:0 10px;background:var(--sage-soft);align-self:stretch;display:flex;align-items:center;border-right:1px solid var(--border);}
-  .numrow input{border:none;flex:1;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:16px;padding:11px 13px;background:transparent;}
+  .numrow input{border:none;flex:1;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:16px;padding:11px 13px;background:transparent;color:var(--ink);}
   .numrow input:focus{outline:none;}
   .numrow:focus-within{outline:2px solid var(--accent);outline-offset:1px;}
 
@@ -66,7 +66,7 @@
   fieldset legend{font-family:'Fraunces',serif;font-size:17px;font-weight:500;color:var(--accent);margin-bottom:12px;padding:0;}
 
   .radiogroup{display:flex;gap:10px;flex-wrap:wrap;}
-  .radiogroup label{display:flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:8px;padding:9px 14px;font-weight:500;font-size:14px;cursor:pointer;margin:0;flex:1;justify-content:center;}
+  .radiogroup label{display:flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:8px;padding:9px 14px;font-weight:500;font-size:14px;cursor:pointer;margin:0;flex:1;justify-content:center;background:#2A2A2A;}
   .radiogroup input{margin:0;accent-color:var(--accent);}
   .radiogroup label:has(input:checked){border-color:var(--accent);background:var(--accent-soft);}
 
@@ -77,7 +77,7 @@
   button{font-family:'Work Sans',sans-serif;font-weight:600;font-size:15px;border-radius:9px;padding:13px 20px;border:none;cursor:pointer;transition:opacity .15s;}
   button:active{opacity:.8;}
   .btn-primary{background:var(--accent);color:#fff;flex:1;}
-  .btn-primary:disabled{background:#d8c3ca;cursor:not-allowed;}
+  .btn-primary:disabled{background:#5A2239;cursor:not-allowed;}
   .btn-ghost{background:transparent;color:var(--ink-muted);border:1px solid var(--border);}
 
   .kicker-select{display:flex;flex-direction:column;gap:14px;}
@@ -89,10 +89,10 @@
 
   .success{text-align:center;padding:40px 20px;}
   .success .check{width:56px;height:56px;border-radius:50%;background:var(--sage-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
-  .success h2{font-family:'Fraunces',serif;font-weight:500;font-size:24px;margin:0 0 8px;}
+  .success h2{font-family:'Fraunces',serif;font-weight:500;font-size:24px;margin:0 0 8px;color:#FFFFFF;}
   .success p{color:var(--ink-muted);font-size:14px;margin:0 0 24px;}
 
-  .errbox{background:#FBEAEA;border:1px solid #E8C4C4;color:var(--danger);border-radius:9px;padding:12px 14px;font-size:13px;margin-top:16px;display:none;}
+  .errbox{background:#3A1A1A;border:1px solid #662222;color:var(--danger);border-radius:9px;padding:12px 14px;font-size:13px;margin-top:16px;display:none;}
   .errbox.show{display:block;}
 
   .hidden{display:none !important;}
@@ -178,7 +178,7 @@
     <!-- SUCCESS -->
     <div id="stepDone" class="hidden success">
       <div class="check">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#6E8E72" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#2EA060" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <h2>Relatório enviado</h2>
       <p id="doneText">Os dados foram registrados com sucesso.</p>
@@ -190,8 +190,9 @@
 
 <script>
 /* ====================== CONFIG ====================== */
-// Cole aqui a URL do seu Web App do Google Apps Script (Deploy → Web app)
-const ENDPOINT_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
+// URL do Web App do Google Apps Script configurada
+// AKfycbzbQ3-AcoB8BtyxN1VIFmspM9vClok0fKOEEVnfEbe9RmtgVYC_MUQdDa3zBiRct7NISw
+const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzbQ3-AcoB8BtyxN1VIFmspM9vClok0fKOEEVnfEbe9RmtgVYC_MUQdDa3zBiRct7NISw/exec";
 
 /* ====================== FORM SCHEMAS ====================== */
 const SCHEMAS = {
@@ -492,7 +493,7 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
     ...collectFormData()
   };
 
-  if(ENDPOINT_URL.includes("COLE_AQUI")){
+  if(ENDPOINT_URL.includes("SUA_URL")){
     err.textContent = "O endereço de envio (ENDPOINT_URL) ainda não foi configurado no código.";
     err.classList.add("show");
     return;
