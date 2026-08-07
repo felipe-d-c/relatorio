@@ -3,168 +3,734 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Léah Estética</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Léah Estética — Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#121212;
-    --surface:#1E1E1E;
-    --ink:#F3F4F6;
-    --ink-muted:#9CA3AF;
-    --accent:#ED2A78;
-    --accent-soft:#3D1425;
-    --sage:#2EA060;
-    --sage-soft:#1A382B;
-    --border:#333333;
+    --bg:#121212; --surface:#1E1E1E; --surface2:#181818;
+    --ink:#F2EDEB; --ink-muted:#9A9290;
+    --pink:#ED2A78; --teal:#2CC9C9;
+    --gold:#D9A441; --sage:#6E8E72; --danger:#E15656;
+    --border:#333;
     --radius:14px;
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:'Work Sans',sans-serif;-webkit-font-smoothing:antialiased;}
-  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 80px;}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 90px;}
 
-  header.top{text-align:center;margin-bottom:28px;}
-  header.top .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
-  header.top h1{font-family:'Fraunces',serif;font-weight:500;font-size:30px;margin:0;color:#FFFFFF;}
+  header.top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:22px;}
+  header.top .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--pink);margin-bottom:6px;}
+  header.top h1{font-family:'Fraunces',serif;font-weight:500;font-size:26px;margin:0;}
 
-  /* tabs / filters */
-  .tabs{display:flex;gap:8px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px;}
-  .tab{background:var(--surface);border:1px solid var(--border);color:var(--ink-muted);padding:10px 18px;border-radius:9px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;transition:all .15s;}
-  .tab.active{background:var(--accent-soft);border-color:var(--accent);color:#fff;}
+  nav.tabs{display:flex;gap:6px;margin-bottom:22px;border-bottom:1px solid var(--border);overflow-x:auto;}
+  nav.tabs button{background:none;border:none;color:var(--ink-muted);font-family:'Work Sans';font-weight:600;font-size:14px;padding:11px 16px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
+  nav.tabs button.active{color:var(--pink);border-color:var(--pink);}
 
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:0 4px 6px rgba(0,0,0,0.3);margin-bottom:24px;}
-  
-  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin-bottom:24px;}
-  .stat-card{background:#2A2A2A;border:1px solid var(--border);border-radius:10px;padding:16px;}
-  .stat-card .label{font-size:12px;color:var(--ink-muted);text-transform:uppercase;font-family:'IBM Plex Mono',monospace;}
-  .stat-card .value{font-size:24px;font-weight:600;color:#fff;margin-top:6px;font-family:'Fraunces',serif;}
+  .filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:22px;align-items:flex-end;}
+  .filters .f{display:flex;flex-direction:column;gap:5px;}
+  .filters label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-muted);font-family:'IBM Plex Mono',monospace;}
+  select, input[type=date], input[type=month], input[type=file], input[type=text]{
+    background:var(--surface2);border:1px solid var(--border);color:var(--ink);border-radius:9px;
+    padding:9px 12px;font-family:'Work Sans';font-size:14px;
+  }
+  select:focus, input:focus{outline:2px solid var(--pink);outline-offset:1px;}
 
-  table{width:100%;border-collapse:collapse;margin-top:10px;}
-  th, td{text-align:left;padding:12px;border-bottom:1px solid var(--border);font-size:14px;}
-  th{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;}
-  td{color:var(--ink);}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:20px;}
+  .card h2{font-family:'Fraunces',serif;font-weight:500;font-size:18px;margin:0 0 16px;color:var(--ink);}
+  .card h2 .sub{color:var(--ink-muted);font-family:'Work Sans';font-weight:400;font-size:13px;margin-left:8px;}
 
-  .loading{text-align:center;padding:40px;color:var(--ink-muted);font-family:'IBM Plex Mono',monospace;}
-  .back-link{display:inline-block;margin-bottom:20px;color:var(--ink-muted);text-decoration:none;font-size:13px;}
-  .back-link:hover{color:#fff;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  .stat{background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:16px 18px;}
+  .stat .label{font-size:12px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
+  .stat .value{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;}
+  .stat .value.pink{color:var(--pink);}
+  .stat .value.teal{color:var(--teal);}
+  .stat .sub{font-size:12px;color:var(--ink-muted);margin-top:4px;}
+
+  .progress-outer{background:#2A2A2A;border-radius:8px;height:10px;overflow:hidden;margin-top:8px;}
+  .progress-inner{height:100%;background:linear-gradient(90deg,var(--pink),var(--teal));border-radius:8px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th, td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border);}
+  th{color:var(--pink);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.03em;font-family:'IBM Plex Mono',monospace;}
+  td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+  tr:hover td{background:rgba(255,255,255,0.02);}
+
+  .dropzone{border:2px dashed var(--border);border-radius:12px;padding:30px 20px;text-align:center;color:var(--ink-muted);cursor:pointer;transition:.15s;}
+  .dropzone:hover, .dropzone.drag{border-color:var(--pink);color:var(--ink);background:rgba(237,42,120,0.04);}
+  .dropzone input{display:none;}
+
+  button.btn{font-family:'Work Sans';font-weight:600;font-size:14px;border-radius:9px;padding:11px 18px;border:none;cursor:pointer;background:var(--pink);color:#fff;}
+  button.btn.ghost{background:transparent;border:1px solid var(--border);color:var(--ink-muted);}
+  button.btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .preview-item{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;background:var(--surface2);}
+  .preview-item .pi-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .preview-item .pi-head strong{font-family:'Fraunces',serif;font-weight:500;color:var(--teal);}
+  .preview-item .pi-status{font-size:12px;font-family:'IBM Plex Mono',monospace;padding:3px 9px;border-radius:20px;}
+  .pi-status.ok{background:rgba(110,142,114,.2);color:var(--sage);}
+  .pi-status.warn{background:rgba(225,86,86,.2);color:var(--danger);}
+  .pi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;font-size:13px;}
+  .pi-grid .k{color:var(--ink-muted);font-size:11px;text-transform:uppercase;}
+  .pi-grid .v{font-family:'IBM Plex Mono',monospace;}
+
+  .badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 9px;border-radius:20px;background:rgba(44,201,201,.15);color:var(--teal);}
+  .badge.clinica{background:rgba(237,42,120,.15);color:var(--pink);}
+  .badge.kommo{background:rgba(217,164,65,.15);color:var(--gold);}
+
+  .empty{color:var(--ink-muted);font-size:14px;text-align:center;padding:24px 0;}
+  .hidden{display:none !important;}
+  canvas{max-width:100%;}
+
+  .spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:inline-block;vertical-align:-2px;margin-right:7px;}
+  @keyframes sp{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <a href="index.html" class="back-link">← Voltar para o Formulário</a>
 
   <header class="top">
-    <div class="eyebrow">Léah Estética</div>
-    <h1>Dashboard Comercial</h1>
+    <div>
+      <div class="eyebrow">Léah Estética</div>
+      <h1>Dashboard de Unidades</h1>
+    </div>
+    <div class="filters" style="margin:0;">
+      <div class="f">
+        <label>Unidade</label>
+        <select id="fUnidade">
+          <option value="__all__">Todas as unidades</option>
+          <option>Joaçaba</option>
+          <option>Videira</option>
+          <option>Treze Tílias</option>
+          <option>Campos Novos</option>
+        </select>
+      </div>
+      <div class="f">
+        <label>Período</label>
+        <select id="fPeriodo">
+          <option value="diario">Diário</option>
+          <option value="semanal">Semanal</option>
+          <option value="mensal" selected>Mensal</option>
+        </select>
+      </div>
+      <div class="f" id="fDataWrap">
+        <label id="fDataLabel">Mês de referência</label>
+        <input type="month" id="fData">
+      </div>
+      <div class="f">
+        <label>&nbsp;</label>
+        <button class="btn ghost" id="refreshBtn">↻ Atualizar</button>
+      </div>
+    </div>
   </header>
 
-  <!-- Filtros de Unidade -->
-  <div class="tabs" id="unitTabs">
-    <button class="tab active" data-unit="Todas">Todas</button>
-    <button class="tab" data-unit="Joaçaba">Joaçaba</button>
-    <button class="tab" data-unit="Videira">Videira</button>
-    <button class="tab" data-unit="Treze Tílias">Treze Tílias</button>
-    <button class="tab" data-unit="Campos Novos">Campos Novos</button>
+  <nav class="tabs">
+    <button data-tab="consolidado" class="active">Consolidado</button>
+    <button data-tab="belle">Belle (PDF)</button>
+    <button data-tab="clinica">Clínica (Gerentes)</button>
+    <button data-tab="kommo">Kommo</button>
+  </nav>
+
+  <!-- ================= CONSOLIDADO ================= -->
+  <div id="tab-consolidado">
+    <div class="card">
+      <h2>Meta vs. Realizado <span class="sub" id="consolLabel"></span></h2>
+      <div id="consolStats" class="grid"></div>
+    </div>
+    <div class="card">
+      <h2>Faturamento por unidade <span class="sub">fonte: Belle</span></h2>
+      <canvas id="chartConsol" height="110"></canvas>
+    </div>
+    <div class="card">
+      <h2>Evolução diária <span class="sub">fonte: Belle · mês selecionado</span></h2>
+      <canvas id="chartEvolucao" height="90"></canvas>
+    </div>
   </div>
 
-  <!-- Resumo Cards -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="label">Total de Relatórios</div>
-      <div class="value" id="totalCount">-</div>
+  <!-- ================= BELLE ================= -->
+  <div id="tab-belle" class="hidden">
+    <div class="card">
+      <h2>Carregar relatórios da Belle <span class="sub">PDF diário, pode soltar os 4 de uma vez</span></h2>
+      <label class="dropzone" id="dropzone">
+        <input type="file" id="pdfInput" accept="application/pdf" multiple>
+        <div id="dropzoneText">📄 Clique ou arraste os PDFs aqui (Joaçaba, Videira, Treze Tílias, Campos Novos)</div>
+      </label>
+      <div id="pdfPreviewList" style="margin-top:16px;"></div>
+      <div id="pdfImportRow" class="hidden" style="margin-top:14px;display:flex;gap:10px;">
+        <button class="btn" id="importAllBtn">Confirmar e importar tudo</button>
+        <button class="btn ghost" id="cancelImportBtn">Cancelar</button>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="label">Unidade em Destaque</div>
-      <div class="value" id="topUnit" style="font-size:20px;">-</div>
+    <div class="card">
+      <h2>Faturamento diário (Belle) <span class="sub" id="belleTableLabel"></span></h2>
+      <div id="belleTableWrap"><div class="empty">Nenhum dado ainda. Carregue os PDFs acima.</div></div>
     </div>
   </div>
 
-  <!-- Tabela de Dados -->
-  <div class="card">
-    <h3 style="margin-top:0;font-family:'Fraunces',serif;font-weight:500;">Histórico de Envios</h3>
-    <div id="contentArea">
-      <div class="loading">Carregando dados da planilha...</div>
+  <!-- ================= CLÍNICA ================= -->
+  <div id="tab-clinica" class="hidden">
+    <div class="card">
+      <h2>Relatórios enviados pelas gerentes <span class="sub" id="clinicaLabel"></span></h2>
+      <div id="clinicaWrap"><div class="empty">Carregando…</div></div>
     </div>
   </div>
+
+  <!-- ================= KOMMO ================= -->
+  <div id="tab-kommo" class="hidden">
+    <div class="card">
+      <h2>Métricas de Leads (Kommo) <span class="sub">extraídas dos PDFs da Belle</span></h2>
+      <div id="kommoWrap"><div class="empty">Nenhum dado ainda. Carregue os PDFs na aba Belle.</div></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-// Cole aqui a mesma URL do Web App do Apps Script que você usou no index.html
-const API_URL = "https://script.google.com/macros/s/AKfycbzbQ3-AcoB8BtyxN1VIFmspM9vClok0fKOEEVnfEbe9RmtgVYC_MUQdDa3zBiRct7NISw/exec";
+/* ============================================================
+   CONFIG
+   ============================================================ */
+const ENDPOINT_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
 
-let allData = [];
-let currentFilter = "Todas";
+const UNIDADES = ["Joaçaba","Videira","Treze Tílias","Campos Novos"];
+const METAS_MENSAIS = { "Joaçaba":65000, "Videira":75000, "Treze Tílias":65000, "Campos Novos":65000 };
+const CORES = { "Joaçaba":"#ED2A78", "Videira":"#2CC9C9", "Treze Tílias":"#D9A441", "Campos Novos":"#6E8E72" };
 
-async function fetchReports() {
-  try {
-    const res = await fetch(API_URL);
-    allData = await res.json();
-    render();
-  } catch (err) {
-    document.getElementById("contentArea").innerHTML = '<div class="loading" style="color:var(--danger);">Erro ao carregar os dados. Verifique a URL do Apps Script.</div>';
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+/* ============================================================
+   HELPERS GERAIS
+   ============================================================ */
+function fmtMoney(v){
+  return "R$ " + (Number(v)||0).toLocaleString("pt-BR", {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function parseMoneyStr(s){
+  return parseFloat(String(s).replace(/\./g,"").replace(",",".")) || 0;
+}
+function diasUteisNoMes(year, monthIndex){ // exclui domingos
+  const totalDias = new Date(year, monthIndex+1, 0).getDate();
+  let count = 0;
+  for(let d=1; d<=totalDias; d++){
+    if(new Date(year, monthIndex, d).getDay() !== 0) count++;
+  }
+  return count;
+}
+function metaDiaria(unidade, year, monthIndex){
+  return METAS_MENSAIS[unidade] / diasUteisNoMes(year, monthIndex);
+}
+function metaNoIntervalo(unidade, dateFrom, dateTo){
+  // soma a meta diária de cada dia não-domingo dentro do intervalo [dateFrom, dateTo]
+  let total = 0;
+  let d = new Date(dateFrom);
+  while(d <= dateTo){
+    if(d.getDay() !== 0){
+      total += metaDiaria(unidade, d.getFullYear(), d.getMonth());
+    }
+    d.setDate(d.getDate()+1);
+  }
+  return total;
+}
+function parseBRDate(str){
+  // "03/08/2026" -> Date
+  const [dd,mm,yyyy] = str.split("/").map(Number);
+  return new Date(yyyy, mm-1, dd);
+}
+function isoDate(d){
+  return d.toISOString().slice(0,10);
+}
+
+/* ============================================================
+   ESTADO / CACHE DE DADOS DO SHEETS
+   ============================================================ */
+let CACHE = { Diario:[], Semanal:[], Mensal:[], Belle_Diario:[], Belle_Resumo:[], Kommo:[] };
+
+async function fetchAll(){
+  if(ENDPOINT_URL.includes("COLE_AQUI")) return;
+  try{
+    const res = await fetch(ENDPOINT_URL + "?sheet=_all");
+    const data = await res.json();
+    Object.keys(CACHE).forEach(k => { CACHE[k] = data[k] || []; });
+  }catch(e){
+    console.error("Erro ao buscar dados:", e);
   }
 }
 
-function render() {
-  // Filtrar dados
-  const filtered = currentFilter === "Todas" 
-    ? allData 
-    : allData.filter(item => item.unidade && item.unidade.trim().toLowerCase() === currentFilter.toLowerCase());
-
-  // Atualizar cards de resumo
-  document.getElementById("totalCount").textContent = filtered.length;
-  
-  if(allData.length > 0) {
-    const counts = {};
-    allData.forEach(i => { if(i.unidade) counts[i.unidade] = (counts[i.unidade] || 0) + 1; });
-    const top = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b, "-");
-    document.getElementById("topUnit").textContent = top;
-  }
-
-  // Renderizar Tabela
-  const area = document.getElementById("contentArea");
-  if(filtered.length === 0) {
-    area.innerHTML = '<div class="loading">Nenhum relatório encontrado para este filtro.</div>';
-    return;
-  }
-
-  let html = `<table>
-    <thead>
-      <tr>
-        <th>Data / Hora</th>
-        <th>Unidade</th>
-        <th>Responsável</th>
-        <th>Tipo</th>
-      </tr>
-    </thead>
-    <tbody>`;
-
-  filtered.forEach(row => {
-    const dataFmt = row.timestamp ? new Date(row.timestamp).toLocaleDateString('pt-BR') : '-';
-    html += `<tr>
-      <td>${dataFmt}</td>
-      <td><strong>${row.unidade || '-'}</strong></td>
-      <td>${row.responsavel || '-'}</td>
-      <td>${row.sheet || '-'}</td>
-    </tr>`;
+async function postRow(payload){
+  if(ENDPOINT_URL.includes("COLE_AQUI")) return;
+  await fetch(ENDPOINT_URL, {
+    method:"POST", mode:"no-cors",
+    headers:{"Content-Type":"text/plain"},
+    body: JSON.stringify(payload)
   });
-
-  html += `</tbody></table>`;
-  area.innerHTML = html;
 }
 
-// Configurar cliques nas abas
-document.querySelectorAll(".tab").forEach(btn => {
-  btn.addEventListener("click", (e) => {
-    document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
-    e.target.classList.add("active");
-    currentFilter = e.target.dataset.unit;
-    render();
+/* ============================================================
+   TABS
+   ============================================================ */
+document.querySelectorAll("nav.tabs button").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    ["consolidado","belle","clinica","kommo"].forEach(t=>{
+      document.getElementById("tab-"+t).classList.toggle("hidden", t !== btn.dataset.tab);
+    });
+    renderAll();
   });
 });
 
-fetchReports();
+/* ============================================================
+   FILTROS
+   ============================================================ */
+const fUnidade = document.getElementById("fUnidade");
+const fPeriodo = document.getElementById("fPeriodo");
+const fData = document.getElementById("fData");
+const fDataLabel = document.getElementById("fDataLabel");
+
+function todayYYYYMM(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); }
+fData.value = todayYYYYMM();
+
+function updateDataInputMode(){
+  if(fPeriodo.value === "diario"){
+    fDataLabel.textContent = "Dia de referência";
+    fData.type = "date";
+    fData.value = new Date().toISOString().slice(0,10);
+  } else if(fPeriodo.value === "semanal"){
+    fDataLabel.textContent = "Semana (qualquer dia dela)";
+    fData.type = "date";
+    fData.value = new Date().toISOString().slice(0,10);
+  } else {
+    fDataLabel.textContent = "Mês de referência";
+    fData.type = "month";
+    fData.value = todayYYYYMM();
+  }
+}
+fPeriodo.addEventListener("change", ()=>{ updateDataInputMode(); renderAll(); });
+fUnidade.addEventListener("change", renderAll);
+fData.addEventListener("change", renderAll);
+document.getElementById("refreshBtn").addEventListener("click", async ()=>{
+  await fetchAll(); renderAll();
+});
+
+/* retorna {from: Date, to: Date, year, monthIndex} do intervalo selecionado */
+function getIntervalo(){
+  const periodo = fPeriodo.value;
+  if(periodo === "mensal"){
+    const [y,m] = fData.value.split("-").map(Number);
+    const from = new Date(y, m-1, 1);
+    const to = new Date(y, m, 0);
+    return {from, to, year:y, monthIndex:m-1};
+  }
+  if(periodo === "semanal"){
+    const ref = new Date(fData.value+"T00:00:00");
+    const day = ref.getDay(); // 0=domingo
+    const from = new Date(ref); from.setDate(ref.getDate()-day); // domingo
+    const to = new Date(from); to.setDate(from.getDate()+6); // sábado
+    return {from, to, year:ref.getFullYear(), monthIndex:ref.getMonth()};
+  }
+  // diario
+  const ref = new Date(fData.value+"T00:00:00");
+  return {from:ref, to:ref, year:ref.getFullYear(), monthIndex:ref.getMonth()};
+}
+
+function unidadesSelecionadas(){
+  return fUnidade.value === "__all__" ? UNIDADES : [fUnidade.value];
+}
+
+/* ============================================================
+   PDF PARSING
+   ============================================================ */
+async function extractTextFromPDF(file){
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+  let fullText = "";
+  for(let p=1; p<=pdf.numPages; p++){
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    const strings = content.items.map(it => it.str);
+    fullText += strings.join(" ") + "\n";
+  }
+  return fullText;
+}
+
+function parseBelleText(text){
+  const norm = text.replace(/\s+/g," ");
+
+  // Unidade
+  let unidade = null;
+  const mUnidade = norm.match(/Leah Estética\s*·\s*(Joaçaba|Videira|Treze T[ií]lias|Campos Novos)/i);
+  if(mUnidade){
+    unidade = UNIDADES.find(u => u.toLowerCase() === mUnidade[1].toLowerCase().replace("tilias","tílias"));
+    if(!unidade) unidade = mUnidade[1];
+  }
+
+  // Resumo
+  const mResumo = norm.match(/Faturamento Total\s*R\$\s*([\d.,]+)\s*Serviços Vendidos\s*(\d+)\s*Total de Clientes\s*(\d+)\s*Ticket Médio\s*R\$\s*([\d.,]+)/);
+  const resumo = mResumo ? {
+    faturamento_total: parseMoneyStr(mResumo[1]),
+    servicos_vendidos: Number(mResumo[2]),
+    total_clientes: Number(mResumo[3]),
+    ticket_medio: parseMoneyStr(mResumo[4])
+  } : null;
+
+  // Resultado diário (data + valor)
+  const diario = [];
+  const reDiario = /(\d{2}\/\d{2}\/\d{4})\s*\(([^)]*)\)\s*R\$\s*([\d.,]+)/g;
+  let m;
+  while((m = reDiario.exec(norm)) !== null){
+    diario.push({ data: m[1], dia_semana: m[2].trim(), faturamento: parseMoneyStr(m[3]) });
+  }
+
+  // Kommo
+  const mKommo1 = norm.match(/Total de Leads:\s*(\d+)\s*Ganhos:\s*(\d+)\s*Perdidos:\s*(\d+)/);
+  const mKommo2 = norm.match(/Abertos:\s*(\d+)\s*Valor Total Ganho:\s*R\$\s*([\d.,]+)\s*Ticket Médio:\s*R\$\s*([\d.,]+)/);
+  const mKommo3 = norm.match(/Tempo Médio de Fechamento:\s*([^\n]+?)(?:\s*Leads por|$)/);
+  const kommo = mKommo1 ? {
+    total_leads: Number(mKommo1[1]),
+    ganhos: Number(mKommo1[2]),
+    perdidos: Number(mKommo1[3]),
+    abertos: mKommo2 ? Number(mKommo2[1]) : "",
+    valor_ganho: mKommo2 ? parseMoneyStr(mKommo2[2]) : 0,
+    ticket_medio_kommo: mKommo2 ? parseMoneyStr(mKommo2[3]) : 0,
+    tempo_medio_fechamento: mKommo3 ? mKommo3[1].trim() : ""
+  } : null;
+
+  return { unidade, resumo, diario, kommo, ok: !!(unidade && resumo && diario.length) };
+}
+
+/* ============================================================
+   UPLOAD / IMPORT FLOW
+   ============================================================ */
+let pendingImports = []; // [{file, parsed}]
+
+const dropzone = document.getElementById("dropzone");
+const pdfInput = document.getElementById("pdfInput");
+["dragover","dragleave","drop"].forEach(evt=>{
+  dropzone.addEventListener(evt, e=>{
+    e.preventDefault();
+    dropzone.classList.toggle("drag", evt==="dragover");
+    if(evt==="drop") handleFiles(e.dataTransfer.files);
+  });
+});
+pdfInput.addEventListener("change", ()=> handleFiles(pdfInput.files));
+
+async function handleFiles(fileList){
+  const files = [...fileList].filter(f => f.type === "application/pdf");
+  if(!files.length) return;
+  document.getElementById("dropzoneText").innerHTML = '<span class="spin"></span>Lendo PDFs…';
+
+  pendingImports = [];
+  for(const file of files){
+    try{
+      const text = await extractTextFromPDF(file);
+      const parsed = parseBelleText(text);
+      pendingImports.push({file, parsed});
+    }catch(e){
+      pendingImports.push({file, parsed:{ok:false, error:"Falha ao ler o PDF"}});
+    }
+  }
+  renderPreview();
+  document.getElementById("dropzoneText").textContent = "📄 Clique ou arraste os PDFs aqui (Joaçaba, Videira, Treze Tílias, Campos Novos)";
+}
+
+function renderPreview(){
+  const wrap = document.getElementById("pdfPreviewList");
+  wrap.innerHTML = "";
+  pendingImports.forEach(item=>{
+    const p = item.parsed;
+    const div = document.createElement("div");
+    div.className = "preview-item";
+    const ok = p.ok;
+    div.innerHTML = `
+      <div class="pi-head">
+        <strong>${p.unidade || item.file.name}</strong>
+        <span class="pi-status ${ok?"ok":"warn"}">${ok?"Lido com sucesso":"Não consegui ler tudo"}</span>
+      </div>
+      ${ok ? `
+      <div class="pi-grid">
+        <div><div class="k">Faturamento total</div><div class="v">${fmtMoney(p.resumo.faturamento_total)}</div></div>
+        <div><div class="k">Serviços vendidos</div><div class="v">${p.resumo.servicos_vendidos}</div></div>
+        <div><div class="k">Clientes</div><div class="v">${p.resumo.total_clientes}</div></div>
+        <div><div class="k">Ticket médio</div><div class="v">${fmtMoney(p.resumo.ticket_medio)}</div></div>
+        <div><div class="k">Dias no relatório</div><div class="v">${p.diario.length}</div></div>
+        <div><div class="k">Leads Kommo</div><div class="v">${p.kommo ? p.kommo.total_leads : "—"}</div></div>
+      </div>` : `<div style="font-size:13px;color:var(--ink-muted);">Arquivo: ${item.file.name} — verifique se é um PDF de relatório da Belle no formato padrão.</div>`}
+    `;
+    wrap.appendChild(div);
+  });
+  document.getElementById("pdfImportRow").classList.toggle("hidden", pendingImports.length===0);
+}
+
+document.getElementById("cancelImportBtn").addEventListener("click", ()=>{
+  pendingImports = [];
+  document.getElementById("pdfPreviewList").innerHTML = "";
+  document.getElementById("pdfImportRow").classList.add("hidden");
+  pdfInput.value = "";
+});
+
+document.getElementById("importAllBtn").addEventListener("click", async ()=>{
+  const btn = document.getElementById("importAllBtn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Importando…';
+
+  for(const item of pendingImports){
+    const p = item.parsed;
+    if(!p.ok) continue;
+
+    await postRow({
+      sheet: "Belle_Resumo",
+      unidade: p.unidade,
+      timestamp: new Date().toISOString(),
+      faturamento_total: p.resumo.faturamento_total,
+      servicos_vendidos: p.resumo.servicos_vendidos,
+      total_clientes: p.resumo.total_clientes,
+      ticket_medio: p.resumo.ticket_medio
+    });
+
+    for(const d of p.diario){
+      await postRow({
+        sheet: "Belle_Diario",
+        unidade: p.unidade,
+        data: d.data,
+        dia_semana: d.dia_semana,
+        faturamento: d.faturamento
+      });
+    }
+
+    if(p.kommo){
+      await postRow({
+        sheet: "Kommo",
+        unidade: p.unidade,
+        timestamp: new Date().toISOString(),
+        total_leads: p.kommo.total_leads,
+        ganhos: p.kommo.ganhos,
+        perdidos: p.kommo.perdidos,
+        abertos: p.kommo.abertos,
+        valor_ganho: p.kommo.valor_ganho,
+        ticket_medio_kommo: p.kommo.ticket_medio_kommo,
+        tempo_medio_fechamento: p.kommo.tempo_medio_fechamento
+      });
+    }
+  }
+
+  pendingImports = [];
+  document.getElementById("pdfPreviewList").innerHTML = "";
+  document.getElementById("pdfImportRow").classList.add("hidden");
+  pdfInput.value = "";
+  btn.disabled = false;
+  btn.textContent = "Confirmar e importar tudo";
+
+  await fetchAll();
+  renderAll();
+});
+
+/* ============================================================
+   AGREGAÇÃO — soma Belle_Diario dentro do intervalo, por unidade
+   ============================================================ */
+function somaBelleNoIntervalo(unidade, from, to){
+  return CACHE.Belle_Diario
+    .filter(r => r.unidade === unidade)
+    .filter(r => {
+      const d = parseBRDate(r.data);
+      return d >= from && d <= to;
+    })
+    .reduce((acc,r) => acc + Number(r.faturamento||0), 0);
+}
+
+function serieDiariaBelle(unidade, from, to){
+  const rows = CACHE.Belle_Diario
+    .filter(r => r.unidade === unidade)
+    .filter(r => { const d = parseBRDate(r.data); return d >= from && d <= to; })
+    .sort((a,b)=> parseBRDate(a.data) - parseBRDate(b.data));
+  return rows;
+}
+
+/* ============================================================
+   RENDER — CONSOLIDADO
+   ============================================================ */
+let chartConsolInst = null, chartEvoInst = null;
+
+function renderConsolidado(){
+  const {from, to, year, monthIndex} = getIntervalo();
+  const unidades = unidadesSelecionadas();
+  const periodoLabel = {diario:"dia", semanal:"semana", mensal:"mês"}[fPeriodo.value];
+  document.getElementById("consolLabel").textContent = `— ${periodoLabel} selecionado`;
+
+  const statsWrap = document.getElementById("consolStats");
+  statsWrap.innerHTML = "";
+
+  let totalRealizado = 0, totalMeta = 0;
+  unidades.forEach(u=>{
+    const realizado = somaBelleNoIntervalo(u, from, to);
+    const meta = metaNoIntervalo(u, from, to);
+    totalRealizado += realizado; totalMeta += meta;
+    const pct = meta>0 ? Math.min(100, (realizado/meta)*100) : 0;
+    const div = document.createElement("div");
+    div.className = "stat";
+    div.innerHTML = `
+      <div class="label">${u}</div>
+      <div class="value pink">${fmtMoney(realizado)}</div>
+      <div class="sub">meta: ${fmtMoney(meta)} (${pct.toFixed(0)}%)</div>
+      <div class="progress-outer"><div class="progress-inner" style="width:${pct}%"></div></div>
+    `;
+    statsWrap.appendChild(div);
+  });
+
+  if(unidades.length > 1){
+    const pct = totalMeta>0 ? Math.min(100,(totalRealizado/totalMeta)*100) : 0;
+    const div = document.createElement("div");
+    div.className = "stat";
+    div.style.borderColor = "var(--pink)";
+    div.innerHTML = `
+      <div class="label">Total geral</div>
+      <div class="value teal">${fmtMoney(totalRealizado)}</div>
+      <div class="sub">meta: ${fmtMoney(totalMeta)} (${pct.toFixed(0)}%)</div>
+      <div class="progress-outer"><div class="progress-inner" style="width:${pct}%"></div></div>
+    `;
+    statsWrap.appendChild(div);
+  }
+
+  // Bar chart realizado x meta por unidade
+  const ctx = document.getElementById("chartConsol");
+  const labels = unidades;
+  const realizados = unidades.map(u => somaBelleNoIntervalo(u, from, to));
+  const metas = unidades.map(u => metaNoIntervalo(u, from, to));
+  if(chartConsolInst) chartConsolInst.destroy();
+  chartConsolInst = new Chart(ctx, {
+    type:"bar",
+    data:{ labels, datasets:[
+      { label:"Realizado", data:realizados, backgroundColor:"#ED2A78", borderRadius:6 },
+      { label:"Meta", data:metas, backgroundColor:"#333", borderRadius:6 }
+    ]},
+    options:{ responsive:true, plugins:{legend:{labels:{color:"#F2EDEB"}}},
+      scales:{ x:{ticks:{color:"#9A9290"}, grid:{color:"#2A2A2A"}}, y:{ticks:{color:"#9A9290"}, grid:{color:"#2A2A2A"}} } }
+  });
+
+  // Linha de evolução diária dentro do mês selecionado
+  const mFrom = new Date(year, monthIndex, 1);
+  const mTo = new Date(year, monthIndex+1, 0);
+  const diasDoMes = [];
+  for(let d=1; d<=mTo.getDate(); d++) diasDoMes.push(new Date(year, monthIndex, d));
+
+  const datasets = unidades.map(u => {
+    const rows = serieDiariaBelle(u, mFrom, mTo);
+    const map = {};
+    rows.forEach(r => map[r.data] = Number(r.faturamento));
+    return {
+      label: u,
+      data: diasDoMes.map(d => map[String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear()] ?? null),
+      borderColor: CORES[u], backgroundColor: CORES[u], tension:.3, spanGaps:true
+    };
+  });
+  const ctx2 = document.getElementById("chartEvolucao");
+  if(chartEvoInst) chartEvoInst.destroy();
+  chartEvoInst = new Chart(ctx2, {
+    type:"line",
+    data:{ labels: diasDoMes.map(d=>d.getDate()), datasets },
+    options:{ responsive:true, plugins:{legend:{labels:{color:"#F2EDEB"}}},
+      scales:{ x:{ticks:{color:"#9A9290"}, grid:{color:"#2A2A2A"}}, y:{ticks:{color:"#9A9290"}, grid:{color:"#2A2A2A"}} } }
+  });
+}
+
+/* ============================================================
+   RENDER — BELLE (tabela)
+   ============================================================ */
+function renderBelleTab(){
+  const {from, to} = getIntervalo();
+  const unidades = unidadesSelecionadas();
+  document.getElementById("belleTableLabel").textContent =
+    `— ${from.toLocaleDateString("pt-BR")} a ${to.toLocaleDateString("pt-BR")}`;
+
+  let rows = [];
+  unidades.forEach(u => { rows = rows.concat(serieDiariaBelle(u, from, to)); });
+  rows.sort((a,b)=> parseBRDate(a.data) - parseBRDate(b.data));
+
+  const wrap = document.getElementById("belleTableWrap");
+  if(!rows.length){
+    wrap.innerHTML = '<div class="empty">Sem dados da Belle nesse período. Carregue os PDFs acima.</div>';
+    return;
+  }
+  wrap.innerHTML = `<table><thead><tr><th>Data</th><th>Unidade</th><th>Dia</th><th style="text-align:right;">Faturamento</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr><td>${r.data}</td><td><span class="badge">${r.unidade}</span></td><td>${r.dia_semana||""}</td><td class="num">${fmtMoney(r.faturamento)}</td></tr>`).join("")}</tbody></table>`;
+}
+
+/* ============================================================
+   RENDER — CLÍNICA (dados do formulário das gerentes)
+   ============================================================ */
+function renderClinicaTab(){
+  const periodo = fPeriodo.value;
+  const sheetMap = {diario:"Diario", semanal:"Semanal", mensal:"Mensal"};
+  const sheetName = sheetMap[periodo];
+  const unidades = unidadesSelecionadas();
+  document.getElementById("clinicaLabel").textContent = `— relatório ${periodo}`;
+
+  let rows = (CACHE[sheetName]||[]).filter(r => unidades.includes(r.unidade));
+  rows = rows.slice().reverse(); // mais recentes primeiro
+
+  const wrap = document.getElementById("clinicaWrap");
+  if(!rows.length){
+    wrap.innerHTML = '<div class="empty">Nenhum relatório desse tipo enviado ainda pelas gerentes.</div>';
+    return;
+  }
+
+  // pega as colunas relevantes que existirem nesses dados
+  const cols = Object.keys(rows[0]).filter(k => !["sheet"].includes(k));
+  wrap.innerHTML = `<div style="overflow-x:auto;"><table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr></thead>
+    <tbody>${rows.slice(0,30).map(r=>`<tr>${cols.map(c=>`<td>${r[c]!==undefined?r[c]:""}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+
+/* ============================================================
+   RENDER — KOMMO
+   ============================================================ */
+function renderKommoTab(){
+  const unidades = unidadesSelecionadas();
+  let rows = (CACHE.Kommo||[]).filter(r => unidades.includes(r.unidade));
+  rows = rows.slice().reverse();
+
+  const wrap = document.getElementById("kommoWrap");
+  if(!rows.length){
+    wrap.innerHTML = '<div class="empty">Nenhum dado do Kommo ainda. Carregue os PDFs na aba Belle.</div>';
+    return;
+  }
+
+  const latestByUnit = {};
+  rows.forEach(r => { if(!latestByUnit[r.unidade]) latestByUnit[r.unidade] = r; });
+
+  const cardsHtml = Object.values(latestByUnit).map(r => `
+    <div class="stat">
+      <div class="label">${r.unidade}</div>
+      <div class="value pink">${r.total_leads} leads</div>
+      <div class="sub">Ganhos: ${r.ganhos} · Perdidos: ${r.perdidos} · Abertos: ${r.abertos}</div>
+      <div class="sub">Valor ganho: ${fmtMoney(r.valor_ganho)} · Ticket médio: ${fmtMoney(r.ticket_medio_kommo)}</div>
+      <div class="sub">Tempo médio de fechamento: ${r.tempo_medio_fechamento||"—"}</div>
+    </div>
+  `).join("");
+
+  wrap.innerHTML = `<div class="grid">${cardsHtml}</div>
+    <div style="margin-top:20px;overflow-x:auto;">
+    <table><thead><tr><th>Data</th><th>Unidade</th><th>Leads</th><th>Ganhos</th><th>Perdidos</th><th>Abertos</th></tr></thead>
+    <tbody>${rows.slice(0,30).map(r=>`<tr><td>${r.timestamp?String(r.timestamp).slice(0,10):""}</td><td><span class="badge kommo">${r.unidade}</span></td><td>${r.total_leads}</td><td>${r.ganhos}</td><td>${r.perdidos}</td><td>${r.abertos}</td></tr>`).join("")}</tbody></table>
+    </div>`;
+}
+
+/* ============================================================
+   RENDER ALL
+   ============================================================ */
+function renderAll(){
+  renderConsolidado();
+  renderBelleTab();
+  renderClinicaTab();
+  renderKommoTab();
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(async function init(){
+  updateDataInputMode();
+  await fetchAll();
+  renderAll();
+})();
 </script>
 </body>
 </html>
