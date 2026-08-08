@@ -191,7 +191,7 @@
 /* ============================================================
    CONFIG
    ============================================================ */
-const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbwW06hWHTLVuuIUzYsFmJyqtCsPV_qIZZoaKqdVe5OXslq-fK5kKBCPOCX6KWMbpNKEbg/exec";
+const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxB0SOA69Nr0tlrBpuBpTL6NKIv6nBHgnfbGkB2V1naTg5q20IdCBH9FnAI-o26cf5W/exec";
 
 const UNIDADES = ["Joaçaba","Videira","Treze Tílias","Campos Novos"];
 const METAS_MENSAIS = { "Joaçaba":65000, "Videira":75000, "Treze Tílias":65000, "Campos Novos":65000 };
@@ -257,13 +257,15 @@ async function fetchAll(){
   }
 }
 
-async function postRow(payload){
-  if(ENDPOINT_URL.includes("COLE_AQUI")) return;
-  await fetch(ENDPOINT_URL, {
-    method:"POST", mode:"no-cors",
-    headers:{"Content-Type":"text/plain"},
+async function postJSON(payload){
+  if(ENDPOINT_URL.includes("COLE_AQUI")) throw new Error("ENDPOINT_URL não configurada");
+  const res = await fetch(ENDPOINT_URL, {
+    method:"POST",
+    headers:{"Content-Type":"text/plain"}, // evita preflight CORS
     body: JSON.stringify(payload)
   });
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  return res.json();
 }
 
 /* ============================================================
@@ -472,45 +474,27 @@ document.getElementById("cancelImportBtn").addEventListener("click", ()=>{
 document.getElementById("importAllBtn").addEventListener("click", async ()=>{
   const btn = document.getElementById("importAllBtn");
   btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span>Importando…';
 
-  for(const item of pendingImports){
+  const toImport = pendingImports.filter(item => item.parsed.ok);
+  const erros = [];
+
+  for(let i=0; i<toImport.length; i++){
+    const item = toImport[i];
     const p = item.parsed;
-    if(!p.ok) continue;
+    btn.innerHTML = `<span class="spin"></span>Importando ${i+1}/${toImport.length} — ${p.unidade}…`;
 
-    await postRow({
-      sheet: "Belle_Resumo",
-      unidade: p.unidade,
-      timestamp: new Date().toISOString(),
-      faturamento_total: p.resumo.faturamento_total,
-      servicos_vendidos: p.resumo.servicos_vendidos,
-      total_clientes: p.resumo.total_clientes,
-      ticket_medio: p.resumo.ticket_medio
-    });
-
-    for(const d of p.diario){
-      await postRow({
-        sheet: "Belle_Diario",
-        unidade: p.unidade,
-        data: d.data,
-        dia_semana: d.dia_semana,
-        faturamento: d.faturamento
-      });
-    }
-
-    if(p.kommo){
-      await postRow({
-        sheet: "Kommo",
+    try{
+      await postJSON({
+        sheet: "_batch",
         unidade: p.unidade,
         timestamp: new Date().toISOString(),
-        total_leads: p.kommo.total_leads,
-        ganhos: p.kommo.ganhos,
-        perdidos: p.kommo.perdidos,
-        abertos: p.kommo.abertos,
-        valor_ganho: p.kommo.valor_ganho,
-        ticket_medio_kommo: p.kommo.ticket_medio_kommo,
-        tempo_medio_fechamento: p.kommo.tempo_medio_fechamento
+        resumo: p.resumo,
+        diario: p.diario,
+        kommo: p.kommo
       });
+    }catch(e){
+      console.error("Falha ao importar", p.unidade, e);
+      erros.push(p.unidade);
     }
   }
 
@@ -520,6 +504,10 @@ document.getElementById("importAllBtn").addEventListener("click", async ()=>{
   pdfInput.value = "";
   btn.disabled = false;
   btn.textContent = "Confirmar e importar tudo";
+
+  if(erros.length){
+    alert("Não consegui importar: " + erros.join(", ") + ". Confira a URL do Apps Script e tente de novo.");
+  }
 
   await fetchAll();
   renderAll();
