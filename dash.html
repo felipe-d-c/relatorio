@@ -191,7 +191,7 @@
 /* ============================================================
    CONFIG
    ============================================================ */
-const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxB0SOA69Nr0tlrBpuBpTL6NKIv6nBHgnfbGkB2V1naTg5q20IdCBH9FnAI-o26cf5W/exec";
+const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxIB6mTRZmbBuhvRxivywScdzpTUA8QoeCslPIowzx1Y8P4N49jGpRahYkicTzmIiLI/exec";
 
 const UNIDADES = ["Joaçaba","Videira","Treze Tílias","Campos Novos"];
 const METAS_MENSAIS = { "Joaçaba":65000, "Videira":75000, "Treze Tílias":65000, "Campos Novos":65000 };
@@ -233,8 +233,14 @@ function metaNoIntervalo(unidade, dateFrom, dateTo){
   return total;
 }
 function parseBRDate(str){
+  const s = String(str);
+  if(s.includes("T")){
+    // veio como ISO (Date convertido pelo Sheets) — usa a parte da data em UTC
+    const d = new Date(s);
+    return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+  }
   // "03/08/2026" -> Date
-  const [dd,mm,yyyy] = str.split("/").map(Number);
+  const [dd,mm,yyyy] = s.split("/").map(Number);
   return new Date(yyyy, mm-1, dd);
 }
 function isoDate(d){
@@ -259,13 +265,15 @@ async function fetchAll(){
 
 async function postJSON(payload){
   if(ENDPOINT_URL.includes("COLE_AQUI")) throw new Error("ENDPOINT_URL não configurada");
-  const res = await fetch(ENDPOINT_URL, {
+  // OBS: o Apps Script redireciona internamente e bloqueia leitura da resposta
+  // em modo "cors" normal — por isso usamos no-cors. Não dá pra ler o retorno,
+  // então confirmamos o sucesso depois recarregando os dados via GET (que funciona normal).
+  await fetch(ENDPOINT_URL, {
     method:"POST",
-    headers:{"Content-Type":"text/plain"}, // evita preflight CORS
+    mode:"no-cors",
+    headers:{"Content-Type":"text/plain"},
     body: JSON.stringify(payload)
   });
-  if(!res.ok) throw new Error("HTTP "+res.status);
-  return res.json();
 }
 
 /* ============================================================
